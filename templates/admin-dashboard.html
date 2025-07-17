@@ -1,0 +1,1711 @@
+{% extends 'base.html' %}
+
+{% block title %}Admin Dashboard{% endblock %}
+
+{% block extra_head %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+    body {
+        background-color: #f8f9fa;
+        margin: 0;
+        padding: 0;
+        min-height: 100vh;
+    }
+    
+    .center-container {
+        padding: 0;
+        min-height: 100vh;
+        display: block;
+    }
+
+    .header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 15px 30px;
+        background-color: white;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    }
+
+    .header-left {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .header-left .icon {
+        background-color: #4f46e5;
+        color: white;
+        width: 36px;
+        height: 36px;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .header-title {
+        font-size: 1.2rem;
+        font-weight: 600;
+        color: #111827;
+    }
+
+    .header-right {
+        display: flex;
+        align-items: center;
+        gap: 20px;
+    }
+
+    .welcome-text {
+        color: #6b7280;
+    }
+
+    .logout-btn {
+        color: #4f46e5;
+        font-weight: 500;
+        text-decoration: none;
+        transition: color 0.2s;
+    }
+
+    .logout-btn:hover {
+        color: #4338ca;
+    }
+
+    .header-right .action-icon {
+        color: #6b7280;
+        font-size: 1.2rem;
+        cursor: pointer;
+        transition: color 0.2s;
+    }
+
+    .header-right .action-icon:hover {
+        color: #4f46e5;
+    }
+
+    .tabs {
+        display: flex;
+        border-bottom: 1px solid #e5e7eb;
+        margin: 20px 30px 0;
+    }
+
+    .tab {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 12px 20px;
+        font-size: 0.95rem;
+        cursor: pointer;
+        border-bottom: 2px solid transparent;
+        color: #6b7280;
+        transition: all 0.2s;
+    }
+
+    .tab:hover {
+        color: #4f46e5;
+    }
+
+    .tab.active {
+        color: #4f46e5;
+        font-weight: 500;
+        border-bottom: 2px solid #4f46e5;
+    }
+    
+    .tab-counter {
+        background-color: #f3f4f6;
+        color: #6b7280;
+        font-size: 0.75rem;
+        padding: 2px 8px;
+        border-radius: 10px;
+    }
+
+    .content {
+        padding: 30px;
+    }
+
+    .content-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+    }
+
+    .content-title {
+        font-size: 1.5rem;
+        font-weight: 600;
+        color: #111827;
+    }
+
+    .action-buttons {
+        display: flex;
+        gap: 12px;
+    }
+
+    .btn {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 8px 16px;
+        border-radius: 6px;
+        font-size: 0.9rem;
+        font-weight: 500;
+        cursor: pointer;
+        border: none;
+        transition: all 0.2s;
+    }
+
+    .btn-primary {
+        background-color: #4f46e5;
+        color: white;
+    }
+
+    .btn-primary:hover {
+        background-color: #4338ca;
+    }
+
+    .btn-danger {
+        background-color: #fff;
+        color: #ef4444;
+        border: 1px solid #ef4444;
+    }
+
+    .btn-danger:hover {
+        background-color: #fee2e2;
+    }
+
+    .btn-success {
+        background-color: #10b981;
+        color: white;
+    }
+
+    .btn-success:hover {
+        background-color: #059669;
+    }
+
+    .location-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+        gap: 20px;
+    }
+
+    .location-card {
+        background-color: white;
+        border-radius: 8px;
+        padding: 20px;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    }
+
+    .location-name {
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: #111827;
+        margin-bottom: 5px;
+    }
+
+    .location-address {
+        font-size: 0.9rem;
+        color: #6b7280;
+        margin-bottom: 15px;
+    }
+
+    .location-hours {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        color: #6b7280;
+        font-size: 0.9rem;
+        margin-bottom: 15px;
+    }
+
+    .location-status {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        margin-bottom: 15px;
+    }
+
+    .status-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+    }
+
+    .status-active .status-dot {
+        background-color: #10b981;
+    }
+
+    .status-inactive .status-dot {
+        background-color: #ef4444;
+    }
+
+    .status-text {
+        font-size: 0.85rem;
+        font-weight: 500;
+    }
+
+    .status-active .status-text {
+        color: #10b981;
+    }
+
+    .status-inactive .status-text {
+        color: #ef4444;
+    }
+
+    .location-actions {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+        margin-top: 15px;
+    }
+
+    .action-btn {
+        padding: 8px;
+        border-radius: 6px;
+        font-size: 0.85rem;
+        font-weight: 500;
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.2s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+    }
+
+    .btn-edit {
+        background-color: #eff6ff;
+        color: #3b82f6;
+    }
+
+    .btn-edit:hover {
+        background-color: #dbeafe;
+    }
+
+    .btn-delete {
+        background-color: #fef2f2;
+        color: #ef4444;
+    }
+
+    .btn-delete:hover {
+        background-color: #fee2e2;
+    }
+
+    /* Stats cards */
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+        gap: 20px;
+        margin-bottom: 30px;
+    }
+
+    .stats-card {
+        background-color: white;
+        border-radius: 8px;
+        padding: 15px;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        display: flex;
+        align-items: center;
+        gap: 15px;
+    }
+
+    .stats-icon {
+        width: 40px;
+        height: 40px;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+    }
+
+    .icon-blue {
+        background-color: #ebf5ff;
+        color: #3b82f6;
+    }
+
+    .icon-green {
+        background-color: #ecfdf5;
+        color: #10b981;
+    }
+
+    .icon-orange {
+        background-color: #fff7ed;
+        color: #f97316;
+    }
+
+    .icon-purple {
+        background-color: #f5f3ff;
+        color: #8b5cf6;
+    }
+
+    .stats-info {
+        flex-grow: 1;
+    }
+
+    .stats-label {
+        font-size: 0.85rem;
+        color: #6b7280;
+        margin-bottom: 5px;
+    }
+
+    .stats-value {
+        font-size: 1.5rem;
+        font-weight: 600;
+        color: #111827;
+    }
+
+    .search-filters {
+        background-color: white;
+        border-radius: 8px;
+        padding: 15px;
+        margin-bottom: 20px;
+        display: flex;
+        align-items: center;
+        gap: 15px;
+    }
+
+    .search-input {
+        flex-grow: 1;
+        position: relative;
+    }
+
+    .search-input input {
+        width: 100%;
+        padding: 8px 15px 8px 35px;
+        border: 1px solid #e5e7eb;
+        border-radius: 6px;
+        font-size: 0.9rem;
+    }
+
+    .search-icon {
+        position: absolute;
+        left: 10px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #9ca3af;
+    }
+
+    .filter-dropdown select {
+        padding: 8px 30px 8px 15px;
+        border: 1px solid #e5e7eb;
+        border-radius: 6px;
+        font-size: 0.9rem;
+        color: #4b5563;
+        background-color: white;
+        cursor: pointer;
+        appearance: none;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' width='24' height='24'%3E%3Cpath fill='none' d='M0 0h24v24H0z'/%3E%3Cpath d='M12 15l-4.243-4.243 1.415-1.414L12 12.172l2.828-2.829 1.415 1.414z' fill='%236b7280'/%3E%3C/svg%3E");
+        background-position: right 10px center;
+        background-repeat: no-repeat;
+        background-size: 16px;
+    }
+
+    .records-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    .records-table th,
+    .records-table td {
+        padding: 12px 15px;
+        text-align: left;
+        border-bottom: 1px solid #e5e7eb;
+    }
+
+    .records-table th {
+        color: #6b7280;
+        font-weight: 500;
+        font-size: 0.85rem;
+        text-transform: uppercase;
+    }
+
+    .records-table td {
+        color: #111827;
+        font-size: 0.9rem;
+    }
+
+    .empty-state {
+        padding: 40px 0;
+        text-align: center;
+        color: #6b7280;
+    }
+
+    .empty-state i {
+        font-size: 3rem;
+        color: #d1d5db;
+        margin-bottom: 15px;
+    }
+
+    .empty-state-title {
+        font-size: 1.1rem;
+        font-weight: 500;
+        color: #374151;
+        margin-bottom: 5px;
+    }
+
+    .empty-state-desc {
+        color: #6b7280;
+        font-size: 0.9rem;
+    }
+
+    /* Employee section */
+    .employee-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+        gap: 20px;
+    }
+
+    .employee-card {
+        background-color: white;
+        border-radius: 8px;
+        padding: 20px;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        display: flex;
+        align-items: center;
+        gap: 15px;
+    }
+
+    .employee-avatar {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        background-color: #e5e7eb;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #6b7280;
+        font-size: 1.2rem;
+        font-weight: 500;
+    }
+
+    .employee-info {
+        flex-grow: 1;
+    }
+
+    .employee-name {
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: #111827;
+        margin-bottom: 5px;
+    }
+
+    .employee-id {
+        font-size: 0.85rem;
+        color: #6b7280;
+        margin-bottom: 5px;
+    }
+
+    .employee-role {
+        display: inline-block;
+        background-color: #f3f4f6;
+        color: #4b5563;
+        font-size: 0.75rem;
+        font-weight: 500;
+        padding: 2px 8px;
+        border-radius: 10px;
+    }
+
+    .tab-content {
+        display: none;
+    }
+
+    .tab-content.active {
+        display: block;
+    }
+
+    .modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0,0,0,0.5);
+        z-index: 1000;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .modal.active {
+        display: flex;
+    }
+
+    .modal-content {
+        background-color: white;
+        border-radius: 8px;
+        width: 90%;
+        max-width: 500px;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+
+    .modal-header {
+        padding: 15px 20px;
+        border-bottom: 1px solid #e5e7eb;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .modal-title {
+        font-size: 1.2rem;
+        font-weight: 600;
+        color: #111827;
+    }
+
+    .modal-close {
+        font-size: 1.5rem;
+        color: #6b7280;
+        cursor: pointer;
+        line-height: 1;
+    }
+
+    .modal-body {
+        padding: 20px;
+    }
+
+    .form-group {
+        margin-bottom: 15px;
+    }
+
+    .form-label {
+        display: block;
+        margin-bottom: 5px;
+        font-size: 0.9rem;
+        font-weight: 500;
+        color: #374151;
+    }
+
+    .form-input {
+        width: 100%;
+        padding: 8px 12px;
+        border: 1px solid #d1d5db;
+        border-radius: 6px;
+        font-size: 0.9rem;
+    }
+
+    .form-input:focus {
+        outline: none;
+        border-color: #4f46e5;
+        box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.1);
+    }
+
+    .modal-footer {
+        padding: 15px 20px;
+        border-top: 1px solid #e5e7eb;
+        display: flex;
+        justify-content: flex-end;
+        gap: 10px;
+    }
+
+    @media (max-width: 768px) {
+        .header {
+            padding: 15px;
+        }
+        
+        .tabs {
+            margin: 15px;
+            overflow-x: auto;
+            white-space: nowrap;
+        }
+        
+        .tab {
+            padding: 10px 15px;
+        }
+        
+        .content {
+            padding: 15px;
+        }
+        
+        .stats-grid,
+        .location-grid,
+        .employee-grid {
+            grid-template-columns: 1fr;
+        }
+        
+        .search-filters {
+            flex-direction: column;
+            align-items: stretch;
+        }
+    }
+
+    .location-empty {
+        background-color: #fff5f5;
+        border-left: 3px solid #ef4444;
+    }
+    
+    .location-empty-row {
+        background-color: #fff5f5;
+    }
+    
+    .location-empty-row td:first-child {
+        border-left: 3px solid #ef4444;
+    }
+    
+    .status-badge {
+        display: inline-block;
+        padding: 3px 8px;
+        border-radius: 12px;
+        font-size: 0.75rem;
+        font-weight: 500;
+    }
+    
+    .status-badge.status-active {
+        background-color: #ecfdf5;
+        color: #10b981;
+    }
+    
+    .status-badge.status-inactive {
+        background-color: #fef2f2;
+        color: #ef4444;
+    }
+    
+    .empty-cell {
+        text-align: center;
+        color: #6b7280;
+        padding: 20px;
+        font-style: italic;
+    }
+    
+    .checked-in-employee {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 4px;
+    }
+    
+    .employee-avatar-small {
+        width: 24px;
+        height: 24px;
+        border-radius: 50%;
+        background-color: #4f46e5;
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.7rem;
+        font-weight: 500;
+    }
+    
+    .no-employees {
+        color: #ef4444;
+        font-style: italic;
+        font-size: 0.9rem;
+    }
+    
+    .active-locations-table-container {
+        margin-top: 20px;
+    }
+
+    .coordinate-status {
+        font-size: 0.85rem;
+        color: #6b7280;
+        margin-top: 10px;
+    }
+
+    .employee-actions {
+        margin-left: auto;
+        margin-right: 10px;
+    }
+    
+    .employee-card {
+        position: relative;
+    }
+    
+    .employee-card .action-btn {
+        padding: 6px 12px;
+        border-radius: 6px;
+        font-size: 0.85rem;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Header -->
+<div class="header">
+    <div class="header-left">
+        <div class="icon">
+            <i class="fas fa-user-shield"></i>
+        </div>
+        <div class="header-title">Admin Dashboard</div>
+    </div>
+    <div class="header-right">
+        <i class="fas fa-download action-icon" title="Download"></i>
+        <i class="fas fa-upload action-icon" title="Upload"></i>
+        <span class="welcome-text">Welcome, {{ request.user.full_name }}</span>
+        <a href="{% url 'logout' %}" class="logout-btn">Logout</a>
+    </div>
+</div>
+
+<!-- Tabs -->
+<div class="tabs">
+    <div class="tab {% if active_tab == 'locations' %}active{% endif %}" data-tab="locations">
+        <i class="fas fa-map-marker-alt"></i> Locations <span class="tab-counter">({{ locations|length }})</span>
+    </div>
+    <div class="tab {% if active_tab == 'employees' %}active{% endif %}" data-tab="employees">
+        <i class="fas fa-users"></i> Employees
+    </div>
+    <div class="tab {% if active_tab == 'active-locations' %}active{% endif %}" data-tab="active-locations">
+        <i class="fas fa-building"></i> Active Locations
+    </div>
+    <div class="tab {% if active_tab == 'check-in-log' %}active{% endif %}" data-tab="check-in-log">
+        <i class="fas fa-history"></i> Check-in Log
+    </div>
+    <div class="tab {% if active_tab == 'check-in-monitor' %}active{% endif %}" data-tab="check-in-monitor">
+        <i class="fas fa-clipboard-check"></i> Check-in Monitor
+    </div>
+</div>
+
+<!-- Locations Tab Content -->
+<div class="tab-content {% if active_tab == 'locations' %}active{% endif %}" id="locations-content">
+    <div class="content">
+        <div class="content-header">
+            <h1 class="content-title">Location Management</h1>
+            <div class="action-buttons">
+                <button class="btn btn-danger" id="clearAll">
+                    <i class="fas fa-times-circle"></i> Clear All
+                </button>
+                <button class="btn btn-primary" id="addLocation">
+                    <i class="fas fa-plus"></i> Add Location
+                </button>
+            </div>
+        </div>
+
+        <div class="location-grid">
+            {% if locations %}
+                {% for location in locations %}
+                    <div class="location-card {% if location.check_ins.all|length == 0 %}location-empty{% endif %}">
+                        <div class="location-name">{{ location.name }}</div>
+                        <div class="location-address">{{ location.address }}</div>
+                        <div class="location-hours">
+                            <i class="far fa-clock"></i> {{ location.start_time|time:"H:i" }} - {{ location.end_time|time:"H:i" }}
+                        </div>
+                        <div class="location-status {% if location.is_active %}status-active{% else %}status-inactive{% endif %}">
+                            <span class="status-dot"></span>
+                            <span class="status-text">{% if location.is_active %}Active{% else %}Inactive{% endif %}</span>
+                        </div>
+                        <div class="location-actions">
+                            <div class="action-btn btn-edit" data-id="{{ location.id }}">
+                                <i class="fas fa-edit"></i> Edit
+                            </div>
+                            <div class="action-btn btn-delete" data-id="{{ location.id }}">
+                                <i class="fas fa-trash"></i> Delete
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <div class="empty-state">
+                    <i class="fas fa-map-marker-alt"></i>
+                    <div class="empty-state-title">No locations found</div>
+                    <div class="empty-state-desc">Add your first location to get started.</div>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<!-- Employees Tab Content -->
+<div class="tab-content {% if active_tab == 'employees' %}active{% endif %}" id="employees-content">
+    <div class="content">
+        <div class="content-header">
+            <h1 class="content-title">Employee Management</h1>
+            <div class="action-buttons">
+                <button class="btn btn-primary" id="addEmployee">
+                    <i class="fas fa-plus"></i> Add Employee
+                </button>
+            </div>
+        </div>
+
+        <div class="employee-grid">
+            {% if employees %}
+                {% for employee in employees %}
+                    <div class="employee-card">
+                        <div class="employee-avatar">{{ employee.full_name|slice:":2"|upper }}</div>
+                        <div class="employee-info">
+                            <div class="employee-name">{{ employee.full_name }}</div>
+                            <div class="employee-id">ID: {{ employee.employee_id }}</div>
+                            <div class="employee-role">{{ employee.role|default:"Employee" }}</div>
+                        </div>
+                        <div class="employee-actions">
+                            <div class="action-btn btn-edit edit-employee" data-id="{{ employee.employee_id }}">
+                                <i class="fas fa-edit"></i> Edit
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <div class="empty-state">
+                    <i class="fas fa-users"></i>
+                    <div class="empty-state-title">No employees found</div>
+                    <div class="empty-state-desc">Add your first employee to get started.</div>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<!-- Active Locations Tab Content -->
+<div class="tab-content {% if active_tab == 'active-locations' %}active{% endif %}" id="active-locations-content">
+    <div class="content">
+        <div class="content-header">
+            <h1 class="content-title">Active Locations</h1>
+            <div class="action-buttons">
+                <button class="btn btn-primary" id="refreshActiveLocations">
+                    <i class="fas fa-sync"></i> Refresh
+                </button>
+            </div>
+        </div>
+
+        <div class="active-locations-table-container">
+            <table class="records-table">
+                <thead>
+                    <tr>
+                        <th>Location</th>
+                        <th>Address</th>
+                        <th>Hours</th>
+                        <th>Status</th>
+                        <th>Checked-in Employees</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% if locations %}
+                        {% for location in locations %}
+                            {% with checked_in_count=location.active_checkins.count %}
+                            <tr class="{% if location.is_active and checked_in_count == 0 %}location-empty-row{% endif %}">
+                                <td>{{ location.name }}</td>
+                                <td>{{ location.address }}</td>
+                                <td>{{ location.start_time|time:"H:i" }} - {{ location.end_time|time:"H:i" }}</td>
+                                <td>
+                                    <span class="status-badge {% if location.is_active %}status-active{% else %}status-inactive{% endif %}">
+                                        {% if location.is_active %}Active{% else %}Inactive{% endif %}
+                                    </span>
+                                </td>
+                                <td>
+                                    {% if location.active_checkins %}
+                                        {% for checkin in location.active_checkins %}
+                                            <div class="checked-in-employee">
+                                                <span class="employee-avatar-small">{{ checkin.employee.full_name|slice:":2"|upper }}</span>
+                                                {{ checkin.employee.full_name }}
+                                            </div>
+                                        {% endfor %}
+                                    {% else %}
+                                        <span class="no-employees">No employees checked in</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endwith %}
+                        {% endfor %}
+                    {% else %}
+                        <tr>
+                            <td colspan="5" class="empty-cell">No locations found</td>
+                        </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Check-in Log Tab Content -->
+<div class="tab-content {% if active_tab == 'check-in-log' %}active{% endif %}" id="check-in-log-content">
+    <div class="content">
+        <div class="content-header">
+            <h1 class="content-title">Check-in Log</h1>
+            <div class="action-buttons">
+                <a href="{% url 'export_checkin_data' %}" class="btn btn-success">
+                    <i class="fas fa-file-export"></i> Export CSV
+                </a>
+            </div>
+        </div>
+
+        <!-- Search and Filters -->
+        <div class="search-filters">
+            <div class="search-input">
+                <i class="fas fa-search search-icon"></i>
+                <input type="text" placeholder="Search by employee or location..." id="logSearchInput">
+            </div>
+            <div class="filter-dropdown">
+                <select id="logStatusFilter">
+                    <option value="">All Status</option>
+                    <option value="checked_in">Checked In</option>
+                    <option value="checked_out">Checked Out</option>
+                </select>
+            </div>
+            <div class="filter-dropdown">
+                <select id="logLocationFilter">
+                    <option value="">All Locations</option>
+                    {% for location in locations %}
+                        <option value="{{ location.id }}">{{ location.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="filter-dropdown">
+                <select id="logDateFilter">
+                    <option value="">All Dates</option>
+                    <option value="today">Today</option>
+                    <option value="yesterday">Yesterday</option>
+                    <option value="this-week">This Week</option>
+                    <option value="this-month">This Month</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Records Table -->
+        <div class="records-section">
+            <h2 style="font-size: 1.1rem; margin-bottom: 15px; color: #374151;">All Check-in Records ({{ checkin_records|length }})</h2>
+            <table class="records-table" id="log-table">
+                <thead>
+                    <tr>
+                        <th>Employee</th>
+                        <th>Location</th>
+                        <th>Check In</th>
+                        <th>Check Out</th>
+                        <th>Duration</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% if checkin_records %}
+                        {% for record in checkin_records %}
+                            <tr data-location-id="{{ record.location.id }}" data-status="{{ record.status }}" class="log-row">
+                                <td>{{ record.employee.full_name }}</td>
+                                <td>{{ record.location.name }}</td>
+                                <td>{{ record.check_in_time|date:"M d, Y H:i" }}</td>
+                                <td>{{ record.check_out_time|date:"M d, Y H:i"|default:"--" }}</td>
+                                <td>{{ record.duration|default:"--" }}</td>
+                                <td>
+                                    <span class="status-badge {% if record.status == 'checked_in' %}status-active{% else %}status-inactive{% endif %}">
+                                        {{ record.get_status_display }}
+                                    </span>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    {% else %}
+                        <tr>
+                            <td colspan="6" class="empty-cell">No records found</td>
+                        </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+            
+            {% if not checkin_records %}
+            <!-- Empty State -->
+            <div class="empty-state">
+                <i class="far fa-clock"></i>
+                <div class="empty-state-title">No records found</div>
+                <div class="empty-state-desc">Records will appear here when employees start checking in.</div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<!-- Check-in Monitor Tab Content -->
+<div class="tab-content {% if active_tab == 'check-in-monitor' %}active{% endif %}" id="check-in-monitor-content">
+    <div class="content">
+        <div class="content-header">
+            <h1 class="content-title">Check-in Monitor</h1>
+            <div class="action-buttons">
+                <a href="{% url 'export_checkin_data' %}" class="btn btn-success">
+                    <i class="fas fa-file-export"></i> Export CSV
+                </a>
+            </div>
+        </div>
+
+        <!-- Stats Summary -->
+        <div class="stats-grid">
+            <div class="stats-card">
+                <div class="stats-icon icon-blue">
+                    <i class="fas fa-user-check"></i>
+                </div>
+                <div class="stats-info">
+                    <div class="stats-label">Currently Checked In</div>
+                    <div class="stats-value">{{ currently_checked_in }}</div>
+                </div>
+            </div>
+
+            <div class="stats-card">
+                <div class="stats-icon icon-green">
+                    <i class="far fa-calendar-check"></i>
+                </div>
+                <div class="stats-info">
+                    <div class="stats-label">Today's Check-ins</div>
+                    <div class="stats-value">{{ todays_checkins }}</div>
+                </div>
+            </div>
+
+            <div class="stats-card">
+                <div class="stats-icon icon-orange">
+                    <i class="far fa-clock"></i>
+                </div>
+                <div class="stats-info">
+                    <div class="stats-label">Total Hours Today</div>
+                    <div class="stats-value">{{ total_hours_str }}</div>
+                </div>
+            </div>
+
+            <div class="stats-card">
+                <div class="stats-icon icon-purple">
+                    <i class="fas fa-map-marker-alt"></i>
+                </div>
+                <div class="stats-info">
+                    <div class="stats-label">Total Records</div>
+                    <div class="stats-value">{{ total_records }}</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Search and Filters -->
+        <div class="search-filters">
+            <div class="search-input">
+                <i class="fas fa-search search-icon"></i>
+                <input type="text" placeholder="Search by employee or location..." id="monitorSearchInput">
+            </div>
+            <div class="filter-dropdown">
+                <select id="monitorStatusFilter">
+                    <option value="">All Status</option>
+                    <option value="checked_in">Checked In</option>
+                    <option value="checked_out">Checked Out</option>
+                </select>
+            </div>
+            <div class="filter-dropdown">
+                <select id="monitorLocationFilter">
+                    <option value="">All Locations</option>
+                    {% for location in locations %}
+                        <option value="{{ location.id }}">{{ location.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+
+        <!-- Records Table -->
+        <div class="records-section">
+            <h2 style="font-size: 1.1rem; margin-bottom: 15px; color: #374151;">All Check-in Records ({{ checkin_records|length }})</h2>
+            <table class="records-table" id="monitor-table">
+                <thead>
+                    <tr>
+                        <th>Employee</th>
+                        <th>Location</th>
+                        <th>Check In</th>
+                        <th>Check Out</th>
+                        <th>Duration</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% if checkin_records %}
+                        {% for record in checkin_records %}
+                            <tr data-location-id="{{ record.location.id }}" data-status="{{ record.status }}" class="monitor-row">
+                                <td>{{ record.employee.full_name }}</td>
+                                <td>{{ record.location.name }}</td>
+                                <td>{{ record.check_in_time|date:"M d, Y H:i" }}</td>
+                                <td>{{ record.check_out_time|date:"M d, Y H:i"|default:"--" }}</td>
+                                <td>{{ record.duration|default:"--" }}</td>
+                                <td>
+                                    <span class="status-badge {% if record.status == 'checked_in' %}status-active{% else %}status-inactive{% endif %}">
+                                        {{ record.get_status_display }}
+                                    </span>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    {% else %}
+                        <tr>
+                            <td colspan="6" class="empty-cell">No records found</td>
+                        </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+            
+            {% if not checkin_records %}
+            <!-- Empty State -->
+            <div class="empty-state">
+                <i class="far fa-clock"></i>
+                <div class="empty-state-title">No records found</div>
+                <div class="empty-state-desc">Records will appear here when employees start checking in.</div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<!-- Add Location Modal -->
+<div class="modal" id="locationModal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <div class="modal-title">Add New Location</div>
+            <div class="modal-close">&times;</div>
+        </div>
+        <div class="modal-body">
+            <input type="hidden" id="locationId" value="">
+            <div class="form-group">
+                <label class="form-label" for="locationName">Location Name</label>
+                <input type="text" id="locationName" class="form-input" placeholder="Enter location name">
+            </div>
+            <div class="form-group">
+                <label class="form-label" for="locationAddress">Address</label>
+                <input type="text" id="locationAddress" class="form-input" placeholder="Enter address">
+            </div>
+            <div class="form-group">
+                <label class="form-label" for="openTime">Open Time</label>
+                <input type="time" id="openTime" class="form-input">
+            </div>
+            <div class="form-group">
+                <label class="form-label" for="closeTime">Close Time</label>
+                <input type="time" id="closeTime" class="form-input">
+            </div>
+            <div class="form-group">
+                <label class="form-label" for="locationRange">Range (meters)</label>
+                <input type="number" id="locationRange" class="form-input" placeholder="Enter check-in range in meters" value="100" min="10" max="1000">
+            </div>
+            <div class="form-group">
+                <label class="form-label" for="locationLatitude">Latitude</label>
+                <input type="text" id="locationLatitude" class="form-input" placeholder="Enter latitude (e.g. 37.7749)">
+            </div>
+            <div class="form-group">
+                <label class="form-label" for="locationLongitude">Longitude</label>
+                <input type="text" id="locationLongitude" class="form-input" placeholder="Enter longitude (e.g. -122.4194)">
+            </div>
+            <div class="form-group">
+                <button type="button" id="getLocationCoordinates" class="btn btn-primary">
+                    <i class="fas fa-map-marker-alt"></i> Get Current Location
+                </button>
+                <div id="coordinateStatus" class="coordinate-status"></div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn" style="background-color: #f3f4f6; color: #4b5563;">Cancel</button>
+            <button class="btn btn-primary" id="saveLocation">Save</button>
+        </div>
+    </div>
+</div>
+
+<!-- Add Employee Modal -->
+<div class="modal" id="employeeModal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <div class="modal-title">Add New Employee</div>
+            <div class="modal-close">&times;</div>
+        </div>
+        <div class="modal-body">
+            <input type="hidden" id="employeeId" value="">
+            <div class="form-group">
+                <label class="form-label" for="employeeName">Full Name</label>
+                <input type="text" id="employeeName" class="form-input" placeholder="Enter full name">
+            </div>
+            <div class="form-group">
+                <label class="form-label" for="employeeRole">Role</label>
+                <input type="text" id="employeeRole" class="form-input" placeholder="Enter role">
+            </div>
+            <div class="form-group">
+                <label class="form-label" for="employeeEmail">Email</label>
+                <input type="email" id="employeeEmail" class="form-input" placeholder="Enter email">
+            </div>
+            <div class="form-group">
+                <label class="form-label" for="employeePhone">Phone Number</label>
+                <input type="text" id="employeePhone" class="form-input" placeholder="Enter phone number">
+            </div>
+            <div class="form-group">
+                <label class="form-label" for="employeePassword">Password</label>
+                <input type="password" id="employeePassword" class="form-input" placeholder="Enter password">
+                <small style="color: #6b7280;">Leave blank to keep current password when editing</small>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn" style="background-color: #f3f4f6; color: #4b5563;">Cancel</button>
+            <button class="btn btn-primary" id="saveEmployee">Save</button>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Tab switching functionality
+        const tabs = document.querySelectorAll('.tab');
+        const tabContents = document.querySelectorAll('.tab-content');
+        
+        tabs.forEach(tab => {
+            tab.addEventListener('click', function() {
+                const target = this.dataset.tab;
+                
+                // Update URL with tab
+                if (target === 'check-in-monitor') {
+                    window.location.href = '/admin/check-in-monitor/';
+                } else if (target === 'check-in-log') {
+                    window.location.href = '/admin/check-in-log/';
+                } else if (target === 'active-locations') {
+                    window.location.href = '/admin/active-locations/';
+                } else {
+                    window.location.href = `/admin/${target}/`;
+                }
+            });
+        });
+        
+        // Modal functionality
+        const locationModal = document.getElementById('locationModal');
+        const employeeModal = document.getElementById('employeeModal');
+        const addLocationBtn = document.getElementById('addLocation');
+        const addEmployeeBtn = document.getElementById('addEmployee');
+        const modalCloseButtons = document.querySelectorAll('.modal-close');
+        const cancelButtons = document.querySelectorAll('.modal-footer .btn:not(.btn-primary)');
+        
+        // Show location modal
+        if (addLocationBtn) {
+            addLocationBtn.addEventListener('click', function() {
+                // Reset form for adding new location
+                document.getElementById('locationId').value = '';
+                document.getElementById('locationName').value = '';
+                document.getElementById('locationAddress').value = '';
+                document.getElementById('openTime').value = '';
+                document.getElementById('closeTime').value = '';
+                document.getElementById('locationRange').value = '100';
+                document.getElementById('locationLatitude').value = '';
+                document.getElementById('locationLongitude').value = '';
+                document.querySelector('#locationModal .modal-title').textContent = 'Add New Location';
+                
+                locationModal.classList.add('active');
+            });
+        }
+        
+        // Show employee modal
+        if (addEmployeeBtn) {
+            addEmployeeBtn.addEventListener('click', function() {
+                // Reset form for adding new employee
+                document.getElementById('employeeId').value = '';
+                document.getElementById('employeeName').value = '';
+                document.getElementById('employeeRole').value = '';
+                document.getElementById('employeeEmail').value = '';
+                document.getElementById('employeePhone').value = '';
+                document.getElementById('employeePassword').value = '';
+                document.querySelector('#employeeModal .modal-title').textContent = 'Add New Employee';
+                
+                employeeModal.classList.add('active');
+            });
+        }
+        
+        // Close modals on X button click
+        modalCloseButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                locationModal.classList.remove('active');
+                employeeModal.classList.remove('active');
+            });
+        });
+        
+        // Close modals on cancel button click
+        cancelButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                locationModal.classList.remove('active');
+                employeeModal.classList.remove('active');
+            });
+        });
+        
+        // Edit location functionality
+        const editLocationButtons = document.querySelectorAll('.btn-edit[data-id]');
+        editLocationButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                const locationId = this.dataset.id;
+                
+                // Fetch location data
+                fetch(`/api/edit-location/${locationId}/`, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': getCSRFToken()
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        // Populate form with location data
+                        const location = data.location;
+                        document.getElementById('locationId').value = location.id;
+                        document.getElementById('locationName').value = location.name;
+                        document.getElementById('locationAddress').value = location.address;
+                        document.getElementById('openTime').value = location.start_time;
+                        document.getElementById('closeTime').value = location.end_time;
+                        document.getElementById('locationRange').value = location.range_meters;
+                        document.getElementById('locationLatitude').value = location.latitude;
+                        document.getElementById('locationLongitude').value = location.longitude;
+                        
+                        // Change modal title
+                        document.querySelector('#locationModal .modal-title').textContent = 'Edit Location';
+                        
+                        // Show modal
+                        locationModal.classList.add('active');
+                    } else {
+                        alert('Error: ' + data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('An error occurred');
+                });
+            });
+        });
+        
+        // Edit employee functionality
+        const editEmployeeButtons = document.querySelectorAll('.edit-employee');
+        editEmployeeButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                const employeeId = this.dataset.id;
+                
+                // Fetch employee data
+                fetch(`/api/edit-employee/${employeeId}/`, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': getCSRFToken()
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        // Populate form with employee data
+                        const employee = data.employee;
+                        document.getElementById('employeeId').value = employee.id;
+                        document.getElementById('employeeName').value = employee.full_name;
+                        document.getElementById('employeeRole').value = employee.role;
+                        document.getElementById('employeeEmail').value = employee.email;
+                        document.getElementById('employeePhone').value = employee.phone_number || '';
+                        document.getElementById('employeePassword').value = '';
+                        
+                        // Change modal title
+                        document.querySelector('#employeeModal .modal-title').textContent = 'Edit Employee';
+                        
+                        // Show modal
+                        employeeModal.classList.add('active');
+                    } else {
+                        alert('Error: ' + data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('An error occurred');
+                });
+            });
+        });
+        
+        // Add Location Functionality
+        const saveLocationBtn = document.getElementById('saveLocation');
+        if (saveLocationBtn) {
+            saveLocationBtn.addEventListener('click', function() {
+                const locationId = document.getElementById('locationId').value;
+                const name = document.getElementById('locationName').value;
+                const address = document.getElementById('locationAddress').value;
+                const startTime = document.getElementById('openTime').value;
+                const endTime = document.getElementById('closeTime').value;
+                const range = document.getElementById('locationRange').value;
+                const latitude = document.getElementById('locationLatitude').value;
+                const longitude = document.getElementById('locationLongitude').value;
+                
+                if (!name || !address || !startTime || !endTime || !range || !latitude || !longitude) {
+                    alert('All fields are required');
+                    return;
+                }
+                
+                // Determine if we're adding or editing
+                const isEditing = locationId !== '';
+                const url = isEditing ? `/api/edit-location/${locationId}/` : '/api/add-location/';
+                
+                // Submit data
+                fetch(url, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': getCSRFToken()
+                    },
+                    body: JSON.stringify({
+                        name: name,
+                        address: address,
+                        start_time: startTime,
+                        end_time: endTime,
+                        range: range,
+                        latitude: latitude,
+                        longitude: longitude
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        alert(isEditing ? 'Location updated successfully' : 'Location added successfully');
+                        locationModal.classList.remove('active');
+                        window.location.reload();
+                    } else {
+                        alert('Error: ' + data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('An error occurred');
+                });
+            });
+        }
+        
+        // Add/Edit Employee Functionality
+        const saveEmployeeBtn = document.getElementById('saveEmployee');
+        if (saveEmployeeBtn) {
+            saveEmployeeBtn.addEventListener('click', function() {
+                const employeeId = document.getElementById('employeeId').value;
+                const name = document.getElementById('employeeName').value;
+                const role = document.getElementById('employeeRole').value;
+                const email = document.getElementById('employeeEmail').value;
+                const phone = document.getElementById('employeePhone').value;
+                const password = document.getElementById('employeePassword').value;
+                
+                if (!name || !email) {
+                    alert('Name and Email are required');
+                    return;
+                }
+                
+                // Determine if we're adding or editing
+                const isEditing = employeeId !== '';
+                const url = isEditing ? `/api/edit-employee/${employeeId}/` : '/api/add-employee/';
+                
+                // Prepare data object
+                const data = {
+                    name: name,
+                    role: role,
+                    email: email,
+                    phone_number: phone
+                };
+                
+                // Only include password if it's provided
+                if (password) {
+                    data.password = password;
+                }
+                
+                // Submit data
+                fetch(url, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': getCSRFToken()
+                    },
+                    body: JSON.stringify(data)
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        alert(isEditing ? 'Employee updated successfully' : 'Employee added successfully');
+                        employeeModal.classList.remove('active');
+                        window.location.reload();
+                    } else {
+                        alert('Error: ' + data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('An error occurred');
+                });
+            });
+        }
+        
+        // Delete location
+        const deleteLocationButtons = document.querySelectorAll('.btn-delete');
+        deleteLocationButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                if (confirm('Are you sure you want to delete this location?')) {
+                    const locationId = this.dataset.id;
+                    
+                    // Call delete API
+                    fetch(`/api/delete-location/${locationId}/`, {
+                        method: 'DELETE',
+                        headers: {
+                            'X-CSRFToken': getCSRFToken()
+                        }
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.status === 'success') {
+                            alert('Location deleted successfully');
+                            window.location.reload();
+                        } else {
+                            alert('Error: ' + data.message);
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        alert('An error occurred');
+                    });
+                }
+            });
+        });
+        
+        // Search functionality for check-in monitor
+        const monitorSearchInput = document.getElementById('monitorSearchInput');
+        const monitorStatusFilter = document.getElementById('monitorStatusFilter');
+        const monitorLocationFilter = document.getElementById('monitorLocationFilter');
+        
+        function filterMonitorTable() {
+            const searchValue = monitorSearchInput ? monitorSearchInput.value.toLowerCase() : '';
+            const statusValue = monitorStatusFilter ? monitorStatusFilter.value : '';
+            const locationValue = monitorLocationFilter ? monitorLocationFilter.value : '';
+            
+            const table = document.getElementById('monitor-table');
+            if (!table) return;
+            
+            const rows = table.querySelectorAll('tbody tr.monitor-row');
+            
+            rows.forEach(row => {
+                const employeeName = row.cells[0].textContent.toLowerCase();
+                const locationName = row.cells[1].textContent.toLowerCase();
+                const status = row.dataset.status;
+                
+                const matchesSearch = searchValue === '' || 
+                                     employeeName.includes(searchValue) || 
+                                     locationName.includes(searchValue);
+                                     
+                const matchesStatus = statusValue === '' || status === statusValue;
+                
+                const matchesLocation = locationValue === '' || 
+                                      row.dataset.locationId === locationValue;
+                
+                if (matchesSearch && matchesStatus && matchesLocation) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+        }
+        
+        // Search functionality for check-in log
+        const logSearchInput = document.getElementById('logSearchInput');
+        const logStatusFilter = document.getElementById('logStatusFilter');
+        const logLocationFilter = document.getElementById('logLocationFilter');
+        const logDateFilter = document.getElementById('logDateFilter');
+        
+        function filterLogTable() {
+            const searchValue = logSearchInput ? logSearchInput.value.toLowerCase() : '';
+            const statusValue = logStatusFilter ? logStatusFilter.value : '';
+            const locationValue = logLocationFilter ? logLocationFilter.value : '';
+            const dateValue = logDateFilter ? logDateFilter.value : '';
+            
+            const table = document.getElementById('log-table');
+            if (!table) return;
+            
+            const rows = table.querySelectorAll('tbody tr.log-row');
+            
+            rows.forEach(row => {
+                const employeeName = row.cells[0].textContent.toLowerCase();
+                const locationName = row.cells[1].textContent.toLowerCase();
+                const checkInDate = row.cells[2].textContent;
+                const status = row.dataset.status; // Use data-status attribute
+                
+                const matchesSearch = searchValue === '' || 
+                                     employeeName.includes(searchValue) || 
+                                     locationName.includes(searchValue);
+                                     
+                const matchesStatus = statusValue === '' || status === statusValue;
+                
+                const matchesLocation = locationValue === '' || 
+                                      row.dataset.locationId === locationValue;
+                
+                // Date filtering logic
+                let matchesDate = true;
+                if (dateValue) {
+                    const today = new Date();
+                    const checkInDateTime = new Date(checkInDate);
+                    
+                    if (dateValue === 'today') {
+                        matchesDate = checkInDateTime.toDateString() === today.toDateString();
+                    } else if (dateValue === 'yesterday') {
+                        const yesterday = new Date(today);
+                        yesterday.setDate(today.getDate() - 1);
+                        matchesDate = checkInDateTime.toDateString() === yesterday.toDateString();
+                    } else if (dateValue === 'this-week') {
+                        const startOfWeek = new Date(today);
+                        startOfWeek.setDate(today.getDate() - today.getDay());
+                        matchesDate = checkInDateTime >= startOfWeek;
+                    } else if (dateValue === 'this-month') {
+                        matchesDate = checkInDateTime.getMonth() === today.getMonth() && 
+                                     checkInDateTime.getFullYear() === today.getFullYear();
+                    }
+                }
+                
+                if (matchesSearch && matchesStatus && matchesLocation && matchesDate) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+        }
+        
+        if (monitorSearchInput) monitorSearchInput.addEventListener('input', filterMonitorTable);
+        if (monitorStatusFilter) monitorStatusFilter.addEventListener('change', filterMonitorTable);
+        if (monitorLocationFilter) monitorLocationFilter.addEventListener('change', filterMonitorTable);
+        
+        if (logSearchInput) logSearchInput.addEventListener('input', filterLogTable);
+        if (logStatusFilter) logStatusFilter.addEventListener('change', filterLogTable);
+        if (logLocationFilter) logLocationFilter.addEventListener('change', filterLogTable);
+        if (logDateFilter) logDateFilter.addEventListener('change', filterLogTable);
+        
+        // Initialize filters on page load
+        if (document.getElementById('monitor-table')) {
+            filterMonitorTable();
+        }
+        
+        if (document.getElementById('log-table')) {
+            filterLogTable();
+        }
+        
+        // Refresh button for active locations
+        const refreshActiveLocationsBtn = document.getElementById('refreshActiveLocations');
+        if (refreshActiveLocationsBtn) {
+            refreshActiveLocationsBtn.addEventListener('click', function() {
+                window.location.reload();
+            });
+        }
+
+        // Get location coordinates functionality
+        const getLocationCoordinatesBtn = document.getElementById('getLocationCoordinates');
+        const latitudeInput = document.getElementById('locationLatitude');
+        const longitudeInput = document.getElementById('locationLongitude');
+        const coordinateStatus = document.getElementById('coordinateStatus');
+
+        if (getLocationCoordinatesBtn) {
+            getLocationCoordinatesBtn.addEventListener('click', function() {
+                if (navigator.geolocation) {
+                    navigator.geolocation.getCurrentPosition(
+                        (position) => {
+                            const latitude = position.coords.latitude;
+                            const longitude = position.coords.longitude;
+                            latitudeInput.value = latitude.toFixed(6);
+                            longitudeInput.value = longitude.toFixed(6);
+                            coordinateStatus.textContent = `Latitude: ${latitude.toFixed(6)}, Longitude: ${longitude.toFixed(6)}`;
+                            coordinateStatus.style.color = 'green';
+                        },
+                        (error) => {
+                            coordinateStatus.textContent = `Error: ${error.message}`;
+                            coordinateStatus.style.color = 'red';
+                        }
+                    );
+                } else {
+                    coordinateStatus.textContent = 'Geolocation is not supported by your browser.';
+                    coordinateStatus.style.color = 'red';
+                }
+            });
+        }
+        
+        // Helper function to get CSRF token
+        function getCSRFToken() {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.startsWith('csrftoken=')) {
+                    return cookie.substring('csrftoken='.length, cookie.length);
+                }
+            }
+            return '';
+        }
+        
+        // Add special style for empty locations
+        document.querySelectorAll('.location-empty').forEach(card => {
+            card.style.backgroundColor = '#fff5f5';
+            card.style.borderLeft = '3px solid #ef4444';
+        });
+    });
+</script>
+{% endblock %}

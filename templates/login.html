@@ -1,0 +1,142 @@
+{% extends 'base.html' %}
+
+{% block title %}Login | Employee Check-in System{% endblock %}
+
+{% block extra_head %}
+<style>
+    .login-card {
+        background: #fff;
+        border-radius: 16px;
+        box-shadow: 0 8px 32px rgba(37,99,235,0.08);
+        padding: 32px 28px 28px 28px;
+        max-width: 400px;
+        width: 100%;
+        margin: 0 auto;
+    }
+
+    .login-card h3 {
+        font-size: 1.1rem;
+        font-weight: 600;
+        margin-bottom: 18px;
+    }
+
+    .input-group {
+        margin-bottom: 18px;
+    }
+
+    .input-label {
+        font-size: 0.98rem;
+        font-weight: 500;
+        margin-bottom: 6px;
+        display: block;
+    }
+
+    .input-field {
+        width: 100%;
+        padding: 12px 40px 12px 12px;
+        border: 2px solid #e5e7eb;
+        border-radius: 8px;
+        font-size: 1rem;
+        background: #f8fafc;
+        outline: none;
+        transition: border-color 0.2s;
+    }
+
+    .input-field:focus {
+        border-color: #2563eb;
+    }
+
+    .input-group.position-relative {
+        position: relative;
+    }
+
+    .input-icon-eye {
+        position: absolute;
+        right: 14px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #6b7280;
+        font-size: 1.2rem;
+        cursor: pointer;
+    }
+
+    .signin-btn {
+        width: 100%;
+        padding: 14px 0;
+        background: linear-gradient(90deg, #2563eb 0%, #3b82f6 100%);
+        color: #fff;
+        font-size: 1.1rem;
+        font-weight: 600;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        margin-top: 10px;
+        box-shadow: 0 2px 8px rgba(37,99,235,0.08);
+        transition: background 0.2s;
+    }
+
+    .signin-btn:hover {
+        background: linear-gradient(90deg, #1d4ed8 0%, #2563eb 100%);
+    }
+    
+    .error-message {
+        background-color: #fee2e2;
+        color: #b91c1c;
+        padding: 10px;
+        border-radius: 8px;
+        margin-bottom: 15px;
+        font-size: 0.9rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="logo">
+    <i class="fas fa-check-circle" style="color: white; font-size: 48px;"></i>
+</div>
+<h1 class="heading">Employee Check-in System</h1>
+<p class="subheading">Sign in to access your dashboard</p>
+
+<div class="login-card">
+    <h3>Sign In</h3>
+    
+    {% if error %}
+    <div class="error-message">
+        {{ error }}
+    </div>
+    {% endif %}
+    
+    <form method="post" action="{% url 'login' %}">
+        {% csrf_token %}
+        <div class="input-group">
+            <label class="input-label" for="email">Email</label>
+            <input type="email" id="email" name="email" class="input-field" placeholder="Enter your email" required>
+        </div>
+        
+        <div class="input-group position-relative">
+            <label class="input-label" for="password">Password</label>
+            <input type="password" id="password" name="password" class="input-field" placeholder="Enter your password" required>
+            <i class="far fa-eye input-icon-eye" id="togglePassword"></i>
+        </div>
+        
+        <button type="submit" class="signin-btn">Sign In</button>
+    </form>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Toggle password visibility
+        const togglePassword = document.getElementById('togglePassword');
+        const passwordInput = document.getElementById('password');
+        
+        togglePassword.addEventListener('click', function() {
+            const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+            passwordInput.setAttribute('type', type);
+            this.classList.toggle('fa-eye');
+            this.classList.toggle('fa-eye-slash');
+        });
+    });
+</script>
+{% endblock %}
