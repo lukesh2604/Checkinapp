@@ -150,6 +150,7 @@ const AdminDashboard = () => {
               <Text style={styles.employeeEmail}>{item.email}</Text>
               <Text style={styles.employeeId}>ID: {item.employee_id}</Text>
               {item.role && <Text style={styles.employeeRole}>{item.role}</Text>}
+              }
             </View>
           </View>
         )}
